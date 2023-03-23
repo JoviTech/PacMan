@@ -12,6 +12,7 @@ ALTURA = 480
 
 VELOCIDADE = 0.5
 
+
 x = 10
 y= 240
 vel_x = VELOCIDADE
