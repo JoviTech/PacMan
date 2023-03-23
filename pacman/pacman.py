@@ -6,7 +6,6 @@ pygame.init()
 AMARELO = (255,255,0)
 PRETO = (0, 0, 0)
 
-
 #SCREEN
 LARGURA = 640
 ALTURA = 480
