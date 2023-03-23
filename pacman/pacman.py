@@ -2,32 +2,35 @@ import pygame
 
 pygame.init()
 
-
+#CORES
 AMARELO = (255,255,0)
 PRETO = (0, 0, 0)
 
-VELOCIDADE = 1
+#SCREEN
 LARGURA = 640
 ALTURA = 480
 
-tela = pygame.display.set_mode((LARGURA, ALTURA), 0)
+VELOCIDADE = 0.5
+
 x = 10
 y= 240
 vel_x = VELOCIDADE
 vel_y = VELOCIDADE
 raio = 30
+
+tela = pygame.display.set_mode((LARGURA, ALTURA), 0)
 while True:
     #calcula as regras
     x += vel_x
     y += vel_y
 
-    if x > LARGURA:
+    if x + raio > LARGURA:
         vel_x = -VELOCIDADE
-    elif x < 0:
+    elif x - raio < 0:
         vel_x = VELOCIDADE
     elif y + raio > ALTURA:
         vel_y = - VELOCIDADE
-    elif y + raio > 0:
+    elif y - raio < 0:
         vel_y = VELOCIDADE
     #pinta
     tela.fill(PRETO)
