@@ -27,7 +27,6 @@ class PacMan:
         self.centro_x  = int(self.coluna * self.tamanho + self.raio)
         self.centro_y = int(self.linha * self.tamanho + self.raio)
 
-
     def pintar(self, tela):
         #Desenha o corpo do pacman
         pygame.draw.circle(tela, AMARELO, (self.centro_x, self.centro_y), self.raio, 0)
