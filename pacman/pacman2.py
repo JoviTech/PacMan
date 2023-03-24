@@ -80,7 +80,6 @@ class PacMan:
                 if e.key == pygame.K_UP:
                     self.vel_y = 0
 
-
 if __name__ == "__main__":
     pacman = PacMan()
 
