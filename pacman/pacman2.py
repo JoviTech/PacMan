@@ -81,7 +81,6 @@ class PacMan:
                     self.vel_y = 0
 
 
-
 if __name__ == "__main__":
     pacman = PacMan()
 
