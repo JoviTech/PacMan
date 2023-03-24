@@ -82,16 +82,6 @@ class PacMan:
 
 
 
-
-                # elif e.type == pygame.K_LEFT:
-                #     self.vel_x = -1
-                # elif e.type == pygame.K_DOWN:
-                #     self.vel_y = 1
-                # elif e.type == pygame.K_UP:
-                #     self.vel_y = -1
-
-
-
 if __name__ == "__main__":
     pacman = PacMan()
 
