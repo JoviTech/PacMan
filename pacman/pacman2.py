@@ -64,6 +64,7 @@ class PacMan:
                 if e.key == pygame.K_LEFT:
                     self.vel_x = 0
 
+
             # Anda para baixo
             if e.type == pygame.KEYDOWN:
                 if e.key == pygame.K_DOWN:
