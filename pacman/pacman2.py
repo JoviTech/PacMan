@@ -9,6 +9,7 @@ TELA = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA), 0)
 
 AMARELO = (255, 255, 0)
 PRETO = (0, 0, 0)
+VELOCIDADE = 1
 
 class PacMan:
     def __init__(self):
@@ -47,38 +48,29 @@ class PacMan:
     def processar_eventos(self, eventos):
         for e in eventos:
 
-            #Anda para direita
+            #Quando aperta a tecla
             if e.type == pygame.KEYDOWN:
                 if e.key == pygame.K_RIGHT:
-                    self.vel_x = 1
+                    self.vel_x = VELOCIDADE
+                if e.key == pygame.K_LEFT:
+                    self.vel_x = - VELOCIDADE
+                if e.key == pygame.K_DOWN:
+                    self.vel_y = VELOCIDADE
+                if e.key == pygame.K_UP:
+                    self.vel_y = -VELOCIDADE
+
+            #Quando solta a tecla
             if e.type == pygame.KEYUP:
                 if e.key == pygame.K_RIGHT:
                     self.vel_x = 0
-
-            #Anda para esquerda
-            if e.type == pygame.KEYDOWN:
-                if e.key == pygame.K_LEFT:
-                    self.vel_x = -1
-            if e.type == pygame.KEYUP:
                 if e.key == pygame.K_LEFT:
                     self.vel_x = 0
-
-
-            # Anda para baixo
-            if e.type == pygame.KEYDOWN:
-                if e.key == pygame.K_DOWN:
-                    self.vel_y = 1
-            if e.type == pygame.KEYUP:
                 if e.key == pygame.K_DOWN:
                     self.vel_y = 0
-
-            # Anda para cima
-            if e.type == pygame.KEYDOWN:
-                if e.key == pygame.K_UP:
-                    self.vel_y = -1
-            if e.type == pygame.KEYUP:
                 if e.key == pygame.K_UP:
                     self.vel_y = 0
+
+
 
 if __name__ == "__main__":
     pacman = PacMan()
