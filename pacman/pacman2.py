@@ -53,9 +53,17 @@ class Cenario:
             x= numero_coluna * self.tamanho
             y = numero_linha * self.tamanho
             cor = PRETO
+            half = self.tamanho // 2
+
+            #Pinta paredes
             if coluna == 2:
                 cor= AZUL
             pygame.draw.rect(tela, cor, (x, y, self.tamanho, self.tamanho), 0)
+
+            #Pinta Pastilhas
+            if coluna == 1:
+                pygame.draw.circle(tela, AMARELO, (x + half,y + half),
+                                   self.tamanho//10, 0)
 
     def pintar(self, tela):
         for numero_linha, linha in enumerate(self.matriz):
@@ -123,7 +131,7 @@ class PacMan:
 
 
 if __name__ == "__main__":
-    size = ALTURA_TELA // 30
+    size = 600 // 30
     pacman = PacMan(size)
     cenario = Cenario(size)
 
