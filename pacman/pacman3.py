@@ -114,7 +114,9 @@ class Cenario(ElementoJogo):
         return direcoes
     def calcula_regras(self):
         direcoes = self.get_direcoes(self.fantasma.linha, self.fantasma.coluna)
-        print(direcoes)
+        if len(direcoes) >= 3:
+            self.fantasma.esquina(direcoes)
+
         col = self.pacman.coluna_intencao
         lin = self.pacman.linha_intencao
         if 0 <= col < 28 and 0 <= lin < 29:
@@ -133,8 +135,10 @@ class Fantasma(ElementoJogo):
     def __init__(self, cor, tamanho):
         self.cor = cor
         self.tamanho = tamanho
+        self.velocidade = 1
+        self.direcao = BAIXO
         self.coluna = 6
-        self.linha = 8
+        self.linha = 2
 
     def pintar(self, tela):
         fatia = self.tamanho // 8
@@ -174,9 +178,19 @@ class Fantasma(ElementoJogo):
         pygame.draw.circle(tela, PRETO, (olho_d_x, olho_d_y), olho_raio_interno, 0)
 
     def calcula_regras(self):
-        pass
+        if self.direcao == CIMA:
+            self.linha -= self.velocidade
+        if self.direcao == BAIXO:
+            self.linha += self.velocidade
+        if self.direcao == ESQUERDA:
+            self.coluna -= self.velocidade
+        if self.direcao == DIREITA:
+            self.coluna += self.velocidade
     def processar_eventos(self, evts):
         pass
+
+    def esquina(self, direcoes):
+        self.direcao = random.choice(direcoes)
 
 
 class PacMan (ElementoJogo):
@@ -257,6 +271,7 @@ if __name__ == "__main__":
         #Calcula regras
         pacman.calcula_regras()
         cenario.calcula_regras()
+        blinky.calcula_regras()
 
         #Pintar a tela
         TELA.fill(PRETO)
