@@ -126,6 +126,14 @@ class Cenario(ElementoJogo):
                     self.pontos += 1
                     self.matriz[lin][col] = 0
 
+        col = int(self.fantasma.coluna_intencao)
+        lin = int(self.fantasma.linha_intencao)
+        if 0 <= col < 28 and 0 <= lin < 29 and self.matriz[lin][col] !=2:
+            self.fantasma.aceitar_movimento()
+        else:
+            self.fantasma.recusar_movimento(direcoes)
+
+
     def processar_eventos(self, evts):
         for e in evts:
             if e.type == pygame.QUIT:
@@ -139,6 +147,8 @@ class Fantasma(ElementoJogo):
         self.direcao = BAIXO
         self.coluna = 6
         self.linha = 2
+        self.linha_intencao = self.linha
+        self.coluna_intencao = self.coluna
 
     def pintar(self, tela):
         fatia = self.tamanho // 8
@@ -179,18 +189,27 @@ class Fantasma(ElementoJogo):
 
     def calcula_regras(self):
         if self.direcao == CIMA:
-            self.linha -= self.velocidade
+            self.linha_intencao -= self.velocidade
         if self.direcao == BAIXO:
-            self.linha += self.velocidade
+            self.linha_intencao += self.velocidade
         if self.direcao == ESQUERDA:
-            self.coluna -= self.velocidade
+            self.coluna_intencao -= self.velocidade
         if self.direcao == DIREITA:
-            self.coluna += self.velocidade
+            self.coluna_intencao += self.velocidade
     def processar_eventos(self, evts):
         pass
-
-    def esquina(self, direcoes):
+    def mudar_direcao(self, direcoes):
         self.direcao = random.choice(direcoes)
+    def esquina(self, direcoes):
+        self.mudar_direcao(direcoes)
+    def recusar_movimento(self, direcoes):
+        self.linha_intencao = self.linha
+        self.coluna_intencao = self.coluna
+        self.mudar_direcao(direcoes)
+    def aceitar_movimento(self):
+        self.linha = self.linha_intencao
+        self.coluna = self.coluna_intencao
+
 
 
 class PacMan (ElementoJogo):
@@ -263,6 +282,8 @@ if __name__ == "__main__":
     size = 600 // 30
     pacman = PacMan(size)
     blinky = Fantasma(ROSA, size)
+    plinky = Fantasma(VERMELHO, size)
+    twynky = Fantasma(VERDE, size)
     cenario = Cenario(size, pacman, blinky)
 
 
@@ -272,6 +293,7 @@ if __name__ == "__main__":
         pacman.calcula_regras()
         cenario.calcula_regras()
         blinky.calcula_regras()
+
 
         #Pintar a tela
         TELA.fill(PRETO)
