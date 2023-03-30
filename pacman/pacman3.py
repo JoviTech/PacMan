@@ -1,4 +1,5 @@
 import pygame
+import random
 from abc import ABCMeta, abstractmethod
 
 pygame.init()
@@ -18,6 +19,11 @@ BRANCO = (255, 255, 255)
 
 VELOCIDADE = 1
 
+CIMA = 1
+BAIXO = 2
+DIREITA = 3
+ESQUERDA  = 4
+
 class ElementoJogo(metaclass=ABCMeta):
     @abstractmethod
     def pintar(self, tela):
@@ -31,8 +37,9 @@ class ElementoJogo(metaclass=ABCMeta):
     def processar_eventos(self, eventos):
         pass
 class Cenario(ElementoJogo):
-    def __init__(self, tamanho, pac):
+    def __init__(self, tamanho, pac, fan):
         self.pacman = pac
+        self.fantasma = fan
         self.tamanho = tamanho
         self.pontos = 0
         self.matriz = [
@@ -93,7 +100,21 @@ class Cenario(ElementoJogo):
         for numero_linha, linha in enumerate(self.matriz):
             self.pintar_linha(tela, numero_linha, linha)
         self.pintar_pontos(tela)
+
+    def get_direcoes(self, linha, coluna):
+        direcoes = []
+        if self.matriz[int(linha - 1)][int(coluna)] != 2:
+            direcoes.append(CIMA)
+        if self.matriz[int(linha + 1)][int(coluna)] != 2:
+            direcoes.append(BAIXO)
+        if self.matriz[int(linha)][int(coluna - 1)] != 2:
+            direcoes.append(ESQUERDA)
+        if self.matriz[int(linha)][int(coluna + 1)] != 2:
+            direcoes.append(DIREITA)
+        return direcoes
     def calcula_regras(self):
+        direcoes = self.get_direcoes(self.fantasma.linha, self.fantasma.coluna)
+        print(direcoes)
         col = self.pacman.coluna_intencao
         lin = self.pacman.linha_intencao
         if 0 <= col < 28 and 0 <= lin < 29:
@@ -119,6 +140,8 @@ class Fantasma(ElementoJogo):
         fatia = self.tamanho // 8
         px = int(self.coluna * self.tamanho)
         py = int(self.linha * self.tamanho)
+
+        #Marcação do perimetro do corpo do fantasma
         contorno = [(px, py + self.tamanho), # ponto 1
                     (px + fatia, py + fatia*3), #ponto 2
                     (px + fatia * 2, py + fatia //2), #ponto 3
@@ -225,9 +248,10 @@ class PacMan (ElementoJogo):
 if __name__ == "__main__":
     size = 600 // 30
     pacman = PacMan(size)
-    cenario = Cenario(size, pacman)
     blinky = Fantasma(ROSA, size)
-    plinky = Fantasma(VERMELHO, size)
+    cenario = Cenario(size, pacman, blinky)
+
+
 
     while True:
         #Calcula regras
