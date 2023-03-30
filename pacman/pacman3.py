@@ -14,6 +14,8 @@ AZUL = (0, 0, 255)
 ROSA = (255, 0, 255)
 VERMELHO = (255, 0, 0)
 VERDE = (0, 255, 0)
+BRANCO = (255, 255, 255)
+
 VELOCIDADE = 1
 
 class ElementoJogo(metaclass=ABCMeta):
@@ -121,11 +123,33 @@ class Fantasma(ElementoJogo):
                     (px + fatia, py + fatia*3), #ponto 2
                     (px + fatia * 2, py + fatia //2), #ponto 3
                     (px + fatia * 3, py), # ponto 4
+                    # Acima é referente ao lado esquerdo do fantasma
+                    # Abaixo começa o lado direito do fantasma
                     (px + fatia * 5, py), # ponto 5
                     (px + fatia * 6, py + fatia // 2), #ponto 6
                     (px + fatia * 7, py + fatia * 3), #ponto 7
                     (px + self.tamanho, py + self.tamanho)] #ponto 8
+
+        #DESENHA O CORPO DO FANTASMA
         pygame.draw.polygon(tela, self.cor, contorno, 0)
+
+        olho_raio_interno = fatia //2
+        olho_raio_externo = fatia
+
+        olho_e_x = int(px + fatia * 2.5)
+        olho_e_y = int(py + fatia * 2.5)
+
+        olho_d_x = int(px + fatia * 5.5)
+        olho_d_y = int(py + fatia * 2.5)
+
+        #DESENHA A PARTE BRANCA DOS OLHOS
+        pygame.draw.circle(tela, BRANCO, (olho_e_x, olho_e_y), olho_raio_externo, 0)
+        pygame.draw.circle(tela, BRANCO, (olho_d_x, olho_d_y), olho_raio_externo, 0)
+
+        #DESENHA A PUPILA DOS OLHOS
+        pygame.draw.circle(tela, PRETO, (olho_e_x, olho_e_y), olho_raio_interno, 0)
+        pygame.draw.circle(tela, PRETO, (olho_d_x, olho_d_y), olho_raio_interno, 0)
+
     def calcula_regras(self):
         pass
     def processar_eventos(self, evts):
