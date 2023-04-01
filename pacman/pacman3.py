@@ -138,6 +138,9 @@ class Cenario(ElementoJogo):
                 movivel.esquina(direcoes)
             if 0 <= lin_intencao < 28 and 0 <= col_intencao < 29 and self.matriz[lin_intencao][col_intencao] != 2:
                 movivel.aceitar_movimento()
+                if isinstance(movivel, PacMan) and self.matriz[lin][col] == 1:
+                    self.pontos += 1
+                    self.matriz[lin][col] = 0
             else:
                 movivel.recusar_movimento(direcoes)
 
@@ -152,8 +155,8 @@ class Fantasma(ElementoJogo, Movivel):
         self.tamanho = tamanho
         self.velocidade = 1
         self.direcao = BAIXO
-        self.coluna = 6
-        self.linha = 2
+        self.coluna = 14
+        self.linha = 14
         self.linha_intencao = self.linha
         self.coluna_intencao = self.coluna
 
