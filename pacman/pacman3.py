@@ -14,8 +14,9 @@ PRETO = (0, 0, 0)
 AZUL = (0, 0, 255)
 ROSA = (255, 0, 255)
 VERMELHO = (255, 0, 0)
-VERDE = (0, 255, 0)
 BRANCO = (255, 255, 255)
+LARANJA = (255, 140, 0)
+CIANO = (0, 255, 255)
 
 VELOCIDADE = 1
 
@@ -48,10 +49,9 @@ class Movivel(metaclass= ABCMeta):
     def esquina(self, direcoes):
         pass
 class Cenario(ElementoJogo):
-    def __init__(self, tamanho, pac, fan):
+    def __init__(self, tamanho, pac):
         self.pacman = pac
-        self.fantasma = fan
-        self.moviveis = [pac, fan]
+        self.moviveis = []
         self.tamanho = tamanho
         self.pontos = 0
         self.matriz = [
@@ -86,7 +86,8 @@ class Cenario(ElementoJogo):
             [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
 
         ]
-
+    def adicionar_movivel(self, obj):
+        self.moviveis.append(obj)
     def pintar_pontos(self, tela):
         pontos_x = 30 * self.tamanho
         img_pontos = fonte.render("Score: {}".format(self.pontos), True, AMARELO)
@@ -294,10 +295,11 @@ class PacMan (ElementoJogo, Movivel):
 if __name__ == "__main__":
     size = 600 // 30
     pacman = PacMan(size)
-    blinky = Fantasma(ROSA, size)
-    plinky = Fantasma(VERMELHO, size)
-    twynky = Fantasma(VERDE, size)
-    cenario = Cenario(size, pacman, blinky)
+    blinky = Fantasma(VERMELHO, size)
+    inky = Fantasma(CIANO, size)
+    clyde = Fantasma(LARANJA, size)
+    pinky = Fantasma(ROSA, size)
+    cenario = Cenario(size, pacman)
 
 
 
@@ -306,6 +308,16 @@ if __name__ == "__main__":
         pacman.calcula_regras()
         cenario.calcula_regras()
         blinky.calcula_regras()
+        inky.calcula_regras()
+        clyde.calcula_regras()
+        pinky.calcula_regras()
+
+        cenario.adicionar_movivel(pacman)
+        cenario.adicionar_movivel(blinky)
+        cenario.adicionar_movivel(inky)
+        cenario.adicionar_movivel(clyde)
+        cenario.adicionar_movivel(pinky)
+
 
 
         #Pintar a tela
@@ -313,6 +325,9 @@ if __name__ == "__main__":
         cenario.pintar(TELA)
         pacman.pintar(TELA)
         blinky.pintar(TELA)
+        inky.pintar(TELA)
+        clyde.pintar(TELA)
+        pinky.pintar(TELA)
 
 
         pygame.display.update()
