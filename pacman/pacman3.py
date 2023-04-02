@@ -205,6 +205,9 @@ class Cenario(ElementoJogo):
                     if isinstance(movivel, PacMan) and self.matriz[lin][col] == 1:
                         self.pontos += 1
                         self.matriz[lin][col] = 0
+                        if self.pontos >= 306:
+                            self.estado = VITORIA
+
                 else:
                     movivel.recusar_movimento(direcoes)
 
@@ -225,8 +228,8 @@ class Fantasma(ElementoJogo, Movivel):
         self.tamanho = tamanho
         self.velocidade = 1
         self.direcao = BAIXO
-        self.coluna = 14
-        self.linha = 14
+        self.coluna = 13.0
+        self.linha = 15.0
         self.linha_intencao = self.linha
         self.coluna_intencao = self.coluna
 
@@ -304,6 +307,8 @@ class PacMan (ElementoJogo, Movivel):
         self.raio = self.tamanho//2 # "//" arredonda para inteiro
         self.coluna_intencao = self.coluna
         self.linha_intencao = self.linha
+        self.abertura_boca = 0
+        self.velocidade_abertura = 1
 
     def calcula_regras(self):
         self.coluna_intencao = self.coluna + self.vel_x
@@ -316,10 +321,16 @@ class PacMan (ElementoJogo, Movivel):
         #Desenha o corpo do pacman
         pygame.draw.circle(tela, AMARELO, (self.centro_x, self.centro_y), self.raio, 0)
 
+        self.abertura_boca += self.velocidade_abertura
+        if self.abertura_boca > self.raio - 3.5:
+            self.velocidade_abertura = -2
+        elif self.abertura_boca <= 0:
+            self.velocidade_abertura = 2
+
         #Desenha a boca
         canto_da_boca = (self.centro_x, self.centro_y)
-        labio_superior = (self.centro_x + self.raio, self.centro_y - self.raio)
-        labio_inferior = (self.centro_x + self.raio, self.centro_y)
+        labio_superior = (self.centro_x + self.raio, self.centro_y - self.abertura_boca)
+        labio_inferior = (self.centro_x + self.raio, self.centro_y + self.abertura_boca)
         pontos = [canto_da_boca, labio_superior, labio_inferior]
         pygame.draw.polygon(tela, PRETO, pontos, 0)
 
