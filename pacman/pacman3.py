@@ -1,5 +1,6 @@
 import pygame
 import random
+import time
 from abc import ABCMeta, abstractmethod
 
 pygame.init()
@@ -19,6 +20,11 @@ LARANJA = (255, 140, 0)
 CIANO = (0, 255, 255)
 
 VELOCIDADE = 1
+
+JOGANDO = 0
+PAUSADO = 1
+GAME_OVER = 2
+VITORIA = 3
 
 CIMA = 1
 BAIXO = 2
@@ -54,8 +60,9 @@ class Cenario(ElementoJogo):
         self.moviveis = []
         self.tamanho = tamanho
         # Estados possíveis => 0 Jogando, 1 Pausado, 2 GameOver, 3 Vitória
-        self.estado = 0
+        self.estado = JOGANDO
         self.pontos = 0
+        self.vidas = 5
         self.matriz = [
             [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
@@ -94,6 +101,10 @@ class Cenario(ElementoJogo):
         pontos_x = 30 * self.tamanho
         img_pontos = font.render("Score: {}".format(self.pontos), True, AMARELO)
         tela.blit(img_pontos, (pontos_x, 50))
+    def pintar_vidas(self, tela):
+        vidas_x = 30 * self.tamanho
+        img_vidas = font.render("Vidas: {}".format(self.vidas), True, AMARELO)
+        tela.blit(img_vidas, (vidas_x, 80))
     def pintar_linha(self, tela, numero_linha, linha):
         for numero_coluna, coluna in enumerate(linha):
             x= numero_coluna * self.tamanho
@@ -113,22 +124,36 @@ class Cenario(ElementoJogo):
 
 
     def pintar(self, tela):
-        if self.estado == 0:
+        if self.estado == JOGANDO:
             self.pintar_jogando(tela)
-        elif self.estado == 1:
+        elif self.estado == PAUSADO:
             self.pintar_jogando(tela)
             self.pintar_pausado(tela)
-    def pintar_pausado(self, tela):
-        img_texto = font.render("P A U S A D O", True, AMARELO)
+        elif self.estado == GAME_OVER:
+            self.pintar_jogando(tela)
+            self.pintar_gameover(tela)
+        elif self.estado == VITORIA:
+            self.pintar_jogando(tela)
+            self.pintar_vitoria(tela)
+
+    def pintar_texto_centro(self, tela, texto):
+        img_texto = font.render(texto, True, AMARELO)
         texto_x = (tela.get_width() - img_texto.get_width()) // 2
         texto_y = (tela.get_height() - img_texto.get_height()) // 2
         tela.blit(img_texto, (texto_x, texto_y))
+
+    def pintar_vitoria(self, tela):
+        self.pintar_texto_centro(tela, "Y O U   W I N")
+    def pintar_gameover(self, tela):
+        self.pintar_texto_centro(tela, "G A M E   O V E R")
+    def pintar_pausado(self, tela):
+        self.pintar_texto_centro(tela,"P A U S A D O")
 
     def pintar_jogando(self, tela):
         for numero_linha, linha in enumerate(self.matriz):
             self.pintar_linha(tela, numero_linha, linha)
         self.pintar_pontos(tela)
-
+        self.pintar_vidas(tela)
     def get_direcoes(self, linha, coluna):
         direcoes = []
         if self.matriz[int(linha - 1)][int(coluna)] != 2:
@@ -142,11 +167,19 @@ class Cenario(ElementoJogo):
         return direcoes
 
     def calcula_regras(self):
-        if self.estado == 0:
+        if self.estado == JOGANDO:
             self.calcula_regras_jogando()
-        elif self.estado == 1:
+        elif self.estado == PAUSADO:
             self.calcula_regras_pausado()
+        elif self.estado == GAME_OVER:
+            self.calcula_regras_gameover()
+        elif self.estado == VITORIA:
+            self.calcula_regras_vitoria()
 
+    def calcula_regras_vitoria(self):
+        pass
+    def calcula_regras_gameover(self):
+        pass
     def calcula_regras_pausado(self):
         pass
     def calcula_regras_jogando(self):
@@ -160,13 +193,20 @@ class Cenario(ElementoJogo):
 
             if len(direcoes) >= 3:
                 movivel.esquina(direcoes)
-            if 0 <= lin_intencao < 28 and 0 <= col_intencao < 29 and self.matriz[lin_intencao][col_intencao] != 2:
-                movivel.aceitar_movimento()
-                if isinstance(movivel, PacMan) and self.matriz[lin][col] == 1:
-                    self.pontos += 1
-                    self.matriz[lin][col] = 0
+            if isinstance(movivel, Fantasma) and movivel.linha == pacman.linha and movivel.coluna == pacman.coluna:
+                self.vidas -= 1
+                if self.vidas <= 0:
+                    self.estado = GAME_OVER
+
+
             else:
-                movivel.recusar_movimento(direcoes)
+                if 0 <= lin_intencao < 28 and 0 <= col_intencao < 29 and self.matriz[lin_intencao][col_intencao] != 2:
+                    movivel.aceitar_movimento()
+                    if isinstance(movivel, PacMan) and self.matriz[lin][col] == 1:
+                        self.pontos += 1
+                        self.matriz[lin][col] = 0
+                else:
+                    movivel.recusar_movimento(direcoes)
 
     def processar_eventos(self, evts):
         for e in evts:
@@ -174,10 +214,10 @@ class Cenario(ElementoJogo):
                 exit()
             if e.type == pygame.KEYDOWN:
                 if e.key == pygame.K_SPACE:
-                    if self.estado == 0:
-                        self.estado = 1
+                    if self.estado == JOGANDO:
+                        self.estado = PAUSADO
                     else:
-                        self.estado = 0
+                        self.estado = JOGANDO
 
 class Fantasma(ElementoJogo, Movivel):
     def __init__(self, cor, tamanho):
