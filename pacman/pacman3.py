@@ -1,6 +1,5 @@
 import pygame
 import random
-import time
 from abc import ABCMeta, abstractmethod
 
 pygame.init()
@@ -98,14 +97,12 @@ class Cenario(ElementoJogo):
         ]
     def adicionar_movivel(self, obj):
         self.moviveis.append(obj)
-    def pintar_pontos(self, tela):
+    def pintar_score(self, tela):
         pontos_x = 30 * self.tamanho
         img_pontos = font.render("Score: {}".format(self.pontos), True, AMARELO)
-        tela.blit(img_pontos, (pontos_x, 50))
-    def pintar_vidas(self, tela):
-        vidas_x = 30 * self.tamanho
         img_vidas = font.render("Vidas: {}".format(self.vidas), True, AMARELO)
-        tela.blit(img_vidas, (vidas_x, 80))
+        tela.blit(img_pontos, (pontos_x, 50))
+        tela.blit(img_vidas, (pontos_x, 80))
     def pintar_linha(self, tela, numero_linha, linha):
         for numero_coluna, coluna in enumerate(linha):
             x= numero_coluna * self.tamanho
@@ -136,9 +133,9 @@ class Cenario(ElementoJogo):
         elif self.estado == VITORIA:
             self.pintar_jogando(tela)
             self.pintar_vitoria(tela)
-        elif self.estado == START:
-            self.pintar_jogando(tela)
-            self.pintar_start(tela)
+        # elif self.estado == START:
+        #     self.pintar_jogando(tela)
+        #     self.pintar_start(tela)
 
     def pintar_texto_centro(self, tela, texto):
         img_texto = font.render(texto, True, AMARELO)
@@ -158,8 +155,8 @@ class Cenario(ElementoJogo):
     def pintar_jogando(self, tela):
         for numero_linha, linha in enumerate(self.matriz):
             self.pintar_linha(tela, numero_linha, linha)
-        self.pintar_pontos(tela)
-        self.pintar_vidas(tela)
+        self.pintar_score(tela)
+
     def get_direcoes(self, linha, coluna):
         direcoes = []
         if self.matriz[int(linha - 1)][int(coluna)] != 2:
@@ -179,11 +176,7 @@ class Cenario(ElementoJogo):
             self.calcula_regras_pausado()
         elif self.estado == GAME_OVER:
             self.calcula_regras_gameover()
-        elif self.estado == VITORIA:
-            self.calcula_regras_vitoria()
 
-    def calcula_regras_vitoria(self):
-        pass
     def calcula_regras_gameover(self):
         pass
     def calcula_regras_pausado(self):
@@ -230,7 +223,6 @@ class Cenario(ElementoJogo):
                         self.estado = PAUSADO
                     else:
                         self.estado = JOGANDO
-
 
 class Fantasma(ElementoJogo, Movivel):
     def __init__(self, cor, tamanho):
