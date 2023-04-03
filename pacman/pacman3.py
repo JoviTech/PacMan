@@ -25,6 +25,7 @@ JOGANDO = 0
 PAUSADO = 1
 GAME_OVER = 2
 VITORIA = 3
+START = 4
 
 CIMA = 1
 BAIXO = 2
@@ -59,10 +60,10 @@ class Cenario(ElementoJogo):
         self.pacman = pac
         self.moviveis = []
         self.tamanho = tamanho
-        # Estados possíveis => 0 Jogando, 1 Pausado, 2 GameOver, 3 Vitória
+        # Estados possíveis => 0 Jogando, 1 Pausado, 2 GameOver, 3 Vitória, 4 Start
         self.estado = JOGANDO
         self.pontos = 0
-        self.vidas = 5
+        self.vidas = 500
         self.matriz = [
             [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
@@ -135,6 +136,9 @@ class Cenario(ElementoJogo):
         elif self.estado == VITORIA:
             self.pintar_jogando(tela)
             self.pintar_vitoria(tela)
+        elif self.estado == START:
+            self.pintar_jogando(tela)
+            self.pintar_start(tela)
 
     def pintar_texto_centro(self, tela, texto):
         img_texto = font.render(texto, True, AMARELO)
@@ -148,6 +152,8 @@ class Cenario(ElementoJogo):
         self.pintar_texto_centro(tela, "G A M E   O V E R")
     def pintar_pausado(self, tela):
         self.pintar_texto_centro(tela,"P A U S A D O")
+    def pintar_start(self, tela):
+        self.pintar_texto_centro(tela, "S T A R T")
 
     def pintar_jogando(self, tela):
         for numero_linha, linha in enumerate(self.matriz):
@@ -193,11 +199,14 @@ class Cenario(ElementoJogo):
 
             if len(direcoes) >= 3:
                 movivel.esquina(direcoes)
-            if isinstance(movivel, Fantasma) and movivel.linha == pacman.linha and movivel.coluna == pacman.coluna:
+            if isinstance(movivel, Fantasma) and movivel.linha == self.pacman.linha and \
+                    movivel.coluna == self.pacman.coluna:
                 self.vidas -= 1
                 if self.vidas <= 0:
                     self.estado = GAME_OVER
-
+                else:
+                    self.pacman.linha = 1
+                    self.pacman.coluna = 1
 
             else:
                 if 0 <= lin_intencao < 28 and 0 <= col_intencao < 29 and self.matriz[lin_intencao][col_intencao] != 2:
@@ -221,6 +230,7 @@ class Cenario(ElementoJogo):
                         self.estado = PAUSADO
                     else:
                         self.estado = JOGANDO
+
 
 class Fantasma(ElementoJogo, Movivel):
     def __init__(self, cor, tamanho):
