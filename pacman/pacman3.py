@@ -62,7 +62,7 @@ class Cenario(ElementoJogo):
         # Estados possíveis => 0 Jogando, 1 Pausado, 2 GameOver, 3 Vitória, 4 Start
         self.estado = JOGANDO
         self.pontos = 0
-        self.vidas = 500
+        self.vidas = 5
         self.matriz = [
             [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
@@ -194,12 +194,27 @@ class Cenario(ElementoJogo):
                 movivel.esquina(direcoes)
             if isinstance(movivel, Fantasma) and movivel.linha == self.pacman.linha and \
                     movivel.coluna == self.pacman.coluna:
-                self.vidas -= 1
-                if self.vidas <= 0:
-                    self.estado = GAME_OVER
-                else:
+
                     self.pacman.linha = 1
                     self.pacman.coluna = 1
+
+                    if self.vidas > 0:
+                        if self.vidas == 5:
+                            self.vidas = 4
+                            break
+                        elif self.vidas == 4:
+                            self.vidas = 3
+                            break
+                        elif self.vidas == 3:
+                            self.vidas = 2
+                            break
+                        if self.vidas == 2:
+                            self.vidas = 1
+                            break
+                        if self.vidas == 1:
+                            self.vidas = 0
+                    elif self.vidas <= 0:
+                        self.estado = GAME_OVER
 
             else:
                 if 0 <= lin_intencao < 28 and 0 <= col_intencao < 29 and self.matriz[lin_intencao][col_intencao] != 2:
